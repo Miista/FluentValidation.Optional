@@ -44,15 +44,15 @@ namespace FluentValidation.Optional.Sandbox
             // RuleFor(x => x.Name)
             //     .NotNull()
             //     .NotEmpty();
-            RuleFor(x => x.Age)
-                .None()
-                .When(x => x.Name == "Zero");
-            RuleFor(x => x.Number)
-                .Equal(x => x.Age.ValueOrDefault())
-                .WhenPresent(x => x.Age);
-            RuleFor(x => x.Age)
-                .WhenPresent(value => value.GreaterThanOrEqualTo(0))
-                .WithMessage("lol");
+            // RuleFor(x => x.Age)
+            //     .None()
+            //     .When(x => x.Name == "Zero");
+            // RuleFor(x => x.Number)
+            //     .Equal(x => x.Age.ValueOrDefault())
+            //     .WhenPresent(x => x.Age);
+            // RuleFor(x => x.Age)
+            //     .WhenPresent(value => value.GreaterThanOrEqualTo(0))
+            //     .WithMessage("lol");
             RuleFor(x => x.Text)
                 .NotNone()
                 .UnlessPresent(x => x.Age)

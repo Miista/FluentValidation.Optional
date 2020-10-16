@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.Optional",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.Optional.Sandbox", "FluentValidation.Optional.Sandbox\FluentValidation.Optional.Sandbox.csproj", "{6309432E-A31A-4C09-8881-EAA3AF3C5A60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.Optional.Tests", "FluentValidation.Optional.Tests\FluentValidation.Optional.Tests.csproj", "{7AD7FCA6-13CE-4B4D-B5F9-3224E72A4266}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{6309432E-A31A-4C09-8881-EAA3AF3C5A60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6309432E-A31A-4C09-8881-EAA3AF3C5A60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6309432E-A31A-4C09-8881-EAA3AF3C5A60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AD7FCA6-13CE-4B4D-B5F9-3224E72A4266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AD7FCA6-13CE-4B4D-B5F9-3224E72A4266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AD7FCA6-13CE-4B4D-B5F9-3224E72A4266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AD7FCA6-13CE-4B4D-B5F9-3224E72A4266}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
