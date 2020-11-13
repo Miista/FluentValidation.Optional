@@ -1,6 +1,5 @@
 ﻿using System;
 using Optional;
-using Optional.Unsafe;
 
 namespace FluentValidation.Optional.Sandbox
 {
@@ -26,7 +25,12 @@ namespace FluentValidation.Optional.Sandbox
     {
         static void Main(string[] args)
         {
-            var entity = new Entity("Zero", Option.None<int>(), (-1), Option.None<int>(), Option.None<string>());
+            var entity = new Entity(
+                name: "Zero",
+                age: Option.None<int>(), 
+                number: (-1),
+                optionalInt: Option.None<int>(),
+                text: Option.None<string>());
             var entityValidator = new EntityValidator();
             var validationResult = entityValidator.Validate(entity);
             Console.WriteLine(validationResult.IsValid);
@@ -54,9 +58,13 @@ namespace FluentValidation.Optional.Sandbox
             //     .WhenPresent(value => value.GreaterThanOrEqualTo(0))
             //     .WithMessage("lol");
             RuleFor(x => x.Text)
-                .NotNone()
-                .UnlessPresent(x => x.Age)
-                .WithMessage("lol");
+                .WhenPresent(x => x.NotEmpty());
+            RuleFor(x => x.Age)
+                .WhenPresent(age => age.GreaterThanOrEqualTo(0));
+            // RuleFor(x => x.Text)
+            //     .NotNone()
+            //     .UnlessPresent(x => x.Age)
+            //     .WithMessage("lol");
             // RuleFor(x => x.Age)
             //     .NotNone()
             //     .When(x => x.Name == "Age");
