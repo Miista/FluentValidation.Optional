@@ -1,0 +1,7 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=17bfef00_002D4c31_002D488e_002Dba91_002D744c4a21ad3e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Can_use_None" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;And&gt;&#xD;
+    &lt;Project Location="C:\Users\SørenPalmund\RiderProjects\FluentValidation.Optional\FluentValidation.Optional.Tests" Presentation="&amp;lt;FluentValidation.Optional.Tests&amp;gt;" /&gt;&#xD;
+    &lt;Namespace&gt;FluentValidation.Optional.Tests&lt;/Namespace&gt;&#xD;
+  &lt;/And&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
