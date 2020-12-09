@@ -100,6 +100,48 @@ namespace FluentValidation.Optional.Tests
                 result.IsValid.Should().BeFalse(because: "'Age' is not None");
             }
         }
+        
+        public class NotNoneTests
+        {
+            private class EntityValidator : AbstractValidator<Entity>
+            {
+                public EntityValidator()
+                {
+                    RuleFor(x => x.Age)
+                        .NotNone();
+                }
+            }
+
+            [Fact]
+            public void Can_use_NotNone_IsValid()
+            {
+                // Arrange
+                var entity = new Entity {Age = default(int).Some()};
+                var sut = new EntityValidator();
+
+                // Act
+                var result = sut.Validate(entity);
+
+                // Assert
+                result.Should().NotBeNull();
+                result.IsValid.Should().BeTrue(because: "'Age' is None");
+            }
+            
+            [Fact]
+            public void Can_use_NotNone_IsNotValid()
+            {
+                // Arrange
+                var entity = new Entity {Age = Option.None<int>()};
+                var sut = new EntityValidator();
+
+                // Act
+                var result = sut.Validate(entity);
+
+                // Assert
+                result.Should().NotBeNull();
+                result.IsValid.Should().BeFalse(because: "'Age' is not None");
+            }
+        }
 
         public class WhenPresentConditionTests
         {
