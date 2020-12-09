@@ -27,7 +27,7 @@ namespace FluentValidation.Optional.Sandbox
         {
             var entity = new Entity(
                 name: "Zero",
-                age: Option.None<int>(), 
+                age: 0.Some(), 
                 number: (-1),
                 optionalInt: Option.None<int>(),
                 text: Option.None<string>());
@@ -45,6 +45,15 @@ namespace FluentValidation.Optional.Sandbox
     {
         public EntityValidator()
         {
+            // RuleFor(x => x.Text)
+            //     .NotNone()
+            //     .WhenSome(x => x.Age)
+            //     .None()
+            //     .WhenNone(x => x.Age);
+            RuleFor(x => x.Age)
+                .WhenSome(x => x.GreaterThan(0));
+            // RuleFor(x => x.Text)
+            //     .WhenPresent(s => s.NotEmpty());
             // RuleFor(x => x.Name)
             //     .NotNull()
             //     .NotEmpty();
@@ -57,10 +66,10 @@ namespace FluentValidation.Optional.Sandbox
             // RuleFor(x => x.Age)
             //     .WhenPresent(value => value.GreaterThanOrEqualTo(0))
             //     .WithMessage("lol");
-            RuleFor(x => x.Text)
-                .WhenPresent(x => x.NotEmpty());
-            RuleFor(x => x.Age)
-                .WhenPresent(age => age.GreaterThanOrEqualTo(0));
+            // RuleFor(x => x.Text)
+            //     .WhenPresent(x => x.NotEmpty());
+            // RuleFor(x => x.Age)
+            //     .WhenPresent(age => age.GreaterThanOrEqualTo(0));
             // RuleFor(x => x.Text)
             //     .NotNone()
             //     .UnlessPresent(x => x.Age)

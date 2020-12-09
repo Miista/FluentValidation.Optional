@@ -15,6 +15,17 @@ namespace FluentValidation.Optional
         /// <param name="rule">The current rule</param>
         /// <param name="action">An action to be invoked if the rule is valid</param>
         /// <returns></returns>
+        public static IRuleBuilderOptions<T, TProperty> WhenSome<T, TProperty>(
+            this IRuleBuilderInitial<T, Option<TProperty>> rule,
+            Func<IRuleBuilderInitial<T, TProperty>, IRuleBuilderOptions<T, TProperty>> action) =>
+            WhenPresent(rule, action);
+        
+        /// <summary>
+        /// Triggers an action to specify validation rules to the contained value when the <see cref="Option{T}"/> contains a value.
+        /// </summary>
+        /// <param name="rule">The current rule</param>
+        /// <param name="action">An action to be invoked if the rule is valid</param>
+        /// <returns></returns>
         public static IRuleBuilderOptions<T, TProperty> WhenPresent<T, TProperty>(
             this IRuleBuilderInitial<T, Option<TProperty>> rule,
             Func<IRuleBuilderInitial<T, TProperty>, IRuleBuilderOptions<T, TProperty>> action)
@@ -40,6 +51,12 @@ namespace FluentValidation.Optional
             return action(nestedRuleBuilder).WhenPresent(actualRuleExpression);
         }
 
+        public static IRuleBuilderOptions<T, TElement> WhenSome<T, TElement, TProperty>(
+            this IRuleBuilderOptions<T, TElement> rule,
+            Expression<Func<T, Option<TProperty>>> expression,
+            ApplyConditionTo applyConditionTo = ApplyConditionTo.AllValidators) =>
+            WhenPresent(rule, expression, applyConditionTo);
+        
         /// <summary>
         /// Specifies a condition limiting when the validator should run.
         /// The validator will only be executed if the <see cref="Option{T}"/> contains a value.
@@ -58,6 +75,23 @@ namespace FluentValidation.Optional
         {
             return rule.When(arg => expression.Compile()(arg).HasValue, applyConditionTo);
         }
+
+        /// <summary>
+        /// Specifies a condition limiting when the validator should run.
+        /// The validator will only be executed if the <see cref="Option{T}"/> does not contain a value.
+        /// </summary>
+        /// <param name="rule">The current rule</param>
+        /// <param name="expression">The expression representing the <see cref="Option{T}"/> to evaluate against</param>
+        /// <param name="applyConditionTo">Whether the condition should be applied to the current rule or all rules in the chain</param>
+        /// <typeparam name="T">The type of object being validated</typeparam>
+        /// <typeparam name="TElement">The type of the property being validated</typeparam>
+        /// <typeparam name="TProperty">The type of property contained in the <see cref="Option{T}"/></typeparam>
+        /// <returns></returns>
+        public static IRuleBuilderOptions<T, TElement> WhenNone<T, TElement, TProperty>(
+            this IRuleBuilderOptions<T, TElement> rule,
+            Expression<Func<T, Option<TProperty>>> expression,
+            ApplyConditionTo applyConditionTo = ApplyConditionTo.AllValidators) =>
+            UnlessPresent(rule, expression, applyConditionTo);
         
         /// <summary>
         /// Specifies a condition limiting when the validator should run.
