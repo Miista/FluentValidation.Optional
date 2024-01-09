@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq.Expressions;
+using FluentValidation.Internal;
 using Optional;
+using Optional.Unsafe;
 
 namespace FluentValidation.Optional.Sandbox
 {
@@ -21,14 +24,35 @@ namespace FluentValidation.Optional.Sandbox
         }
     }
 
+    public class SimpleEntity
+    {
+        public string Name { get; }
+        public Option<string> LastName { get; }
+
+        public SimpleEntity(string name, Option<string> lastName) => (Name, LastName) = (name, lastName);
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
+            // {
+            //     var simpleEntity = new SimpleEntity(
+            //         name: "Zero",
+            //         lastName: Option.None<string>() //"Hour".Some()
+            //     );
+            //     var simpleEntityValidator = new SimpleEntityValidator();
+            //     var validationResult = simpleEntityValidator.Validate(simpleEntity);
+            //     Console.WriteLine(validationResult.IsValid);
+            //     foreach (var error in validationResult.Errors)
+            //     {
+            //         Console.WriteLine(error);
+            //     }
+            // }
             var entity = new Entity(
                 name: "Zero",
                 age: Option.None<int>(), 
-                number: (-1),
+                number: 0,
                 optionalInt: Option.None<int>(),
                 text: Option.None<string>());
             var entityValidator = new EntityValidator();
@@ -38,6 +62,92 @@ namespace FluentValidation.Optional.Sandbox
             {
                 Console.WriteLine(error);
             }
+        }
+    }
+
+    public static class Unwrapper
+    {
+        public static IRuleBuilderOptions<T, TProperty> WhenSome<T, TProperty>(this IRuleBuilderOptions<T, TProperty> rule)
+        {
+            // Cast to extract the actual rule instance from the internal api.
+            var actualRuleBuilder = rule as RuleBuilder<T, TProperty>
+                                    ?? throw new ArgumentException(
+                                        $"Rule is not an instance of '{typeof(RuleBuilder<T, TProperty>)}'.");
+            var actualRule = actualRuleBuilder.Rule;
+            var actualRuleExpression = actualRule.Expression as Expression<Func<T, Option<TProperty>>>
+                                       ?? throw new ArgumentException(
+                                           $"Rule does not point to a property of type '{typeof(Option<TProperty>)}'.");
+            
+            // Provide a transformation function. This is fine as the internal model requires a Func<object, object>
+            actualRule.Transformer = value => ((Option<TProperty>) value).ValueOrDefault();
+            
+            // Create a new RuleBuilder that has the new type as the destination.
+            var nestedRuleBuilder = new RuleBuilder<T, TProperty>(actualRule, actualRuleBuilder.ParentValidator);
+            
+            return nestedRuleBuilder.When(arg => actualRuleExpression.Compile()(arg).HasValue);
+        }
+        
+        public static IRuleBuilderOptions<T, TProperty> WhenNone<T, TProperty>(this IRuleBuilderOptions<T, TProperty> rule)
+        {
+            // Cast to extract the actual rule instance from the internal api.
+            var actualRuleBuilder = rule as RuleBuilder<T, TProperty>
+                                    ?? throw new ArgumentException(
+                                        $"Rule is not an instance of '{typeof(RuleBuilder<T, TProperty>)}'.");
+            var actualRule = actualRuleBuilder.Rule;
+            var actualRuleExpression = actualRule.Expression as Expression<Func<T, Option<TProperty>>>
+                                       ?? throw new ArgumentException(
+                                           $"Rule does not point to a property of type '{typeof(Option<TProperty>)}'.");
+            
+            // Provide a transformation function. This is fine as the internal model requires a Func<object, object>
+            actualRule.Transformer = value => ((Option<TProperty>) value).ValueOrDefault();
+            
+            // Create a new RuleBuilder that has the new type as the destination.
+            var nestedRuleBuilder = new RuleBuilder<T, TProperty>(actualRule, actualRuleBuilder.ParentValidator);
+            
+            return nestedRuleBuilder.When(arg => actualRuleExpression.Compile()(arg).HasValue == false);
+        }
+
+        
+        public static IRuleBuilderOptions<T, TProperty> Unwrap<T, TProperty>(this IRuleBuilderInitial<T, Option<TProperty>> rule)
+        {
+            // Cast to extract the actual rule instance from the internal api.
+            var actualRuleBuilder = rule as RuleBuilder<T, Option<TProperty>>
+                                    ?? throw new ArgumentException(
+                                        $"Rule is not an instance of '{typeof(RuleBuilder<T, Option<TProperty>>)}'.");
+            var actualRule = actualRuleBuilder.Rule;
+
+            // Provide a transformation function. This is fine as the internal model requires a Func<object, object>
+            actualRule.Transformer = value => ((Option<TProperty>) value).ValueOrDefault();
+            
+            // Create a new RuleBuilder that has the new type as the destination.
+            var nestedRuleBuilder = new RuleBuilder<T, TProperty>(actualRule, actualRuleBuilder.ParentValidator);
+
+            return nestedRuleBuilder;
+
+        }
+    }
+    
+    public class SimpleEntityValidator : AbstractValidator<SimpleEntity>
+    {
+        public SimpleEntityValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .MinimumLength(3);
+            RuleFor(x => x.LastName)
+                .Unwrap()
+                .NotEmpty()
+                .MinimumLength(5)
+                .WhenNone()
+                // .Empty()
+                // .WhenNone()
+                // .When(entity => false)
+            ;
+            // RuleFor(x => x.LastName)
+            //     .Unwrap()
+            //     .NotEmpty()
+            //     .WhenSome()
+            // ;
         }
     }
 
@@ -58,9 +168,20 @@ namespace FluentValidation.Optional.Sandbox
             //     .WhenPresent(value => value.GreaterThanOrEqualTo(0))
             //     .WithMessage("lol");
             RuleFor(x => x.Text)
-                .WhenPresent(x => x.NotEmpty());
+                .Unwrap()
+                .NotEmpty()
+                .WhenSome()
+                // .WhenPresent(x => x.NotEmpty())
+                ;
             RuleFor(x => x.Age)
-                .WhenPresent(age => age.GreaterThanOrEqualTo(0));
+                .Unwrap()
+                .GreaterThanOrEqualTo(0)
+                .WhenSome()
+                // .WhenPresent(age => age.GreaterThanOrEqualTo(0))
+                ;
+            RuleFor(x => x.Number)
+                .GreaterThanOrEqualTo(0);
+
             // RuleFor(x => x.Text)
             //     .NotNone()
             //     .UnlessPresent(x => x.Age)
